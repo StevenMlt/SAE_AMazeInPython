@@ -7,16 +7,33 @@ class Maze:
       - clés : sommets
       - valeurs : ensemble des sommets voisins accessibles
     """
-    def __init__(self, height, width):
+    def __init__(self, height, width, empty):
         """
         Constructeur d'un labyrinthe de height cellules de haut 
-        et de width cellules de large 
-        Les voisinages sont initialisés à des ensembles vides
-        Remarque : dans le labyrinthe créé, chaque cellule est complètement emmurée
+        et de width cellules de large.
+        L'argument empty indique si le graphe doit être créé avec 
+        aucun mur (True), ou avec tous les murs (False).
         """
         self.height    = height
         self.width     = width
+        self.empty     = empty
         self.neighbors = {(i,j): set() for i in range(height) for j in range (width)}
+        if empty == True:
+            for i in range(height):
+                for j in range(width):
+                    tempCellHaut = (i-1, j)
+                    tempCellDroite = (i, j+1)
+                    tempCellBas = (i+1, j)
+                    tempCellGauche = (i, j-1)
+                    if i-1 >= 0:
+                        self.neighbors[(i, j)].add(tempCellHaut)
+                        self.neighbors[tempCellHaut].add((i, j))
+                    if j+1 < width:
+                        self.neighbors[(i, j)].add(tempCellDroite)
+                    if i+1 < height:
+                        self.neighbors[(i, j)].add(tempCellBas)
+                    if j-1 >= 0:
+                        self.neighbors[(i, j)].add(tempCellGauche)
 
     def info(self):
         """
@@ -75,8 +92,3 @@ class Maze:
         txt += "━━━┛\n"
 
         return txt
-
-
-laby = Maze(4, 4)
-
-print(laby.info())
