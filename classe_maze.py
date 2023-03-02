@@ -75,8 +75,3 @@ class Maze:
         txt += "━━━┛\n"
 
         return txt
-
-
-laby = Maze(4, 4)
-
-print(laby.info())
