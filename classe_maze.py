@@ -18,22 +18,10 @@ class Maze:
         self.width     = width
         self.empty     = empty
         self.neighbors = {(i,j): set() for i in range(height) for j in range (width)}
-        if empty == True:
-            for i in range(height):
-                for j in range(width):
-                    tempCellHaut = (i-1, j)
-                    tempCellDroite = (i, j+1)
-                    tempCellBas = (i+1, j)
-                    tempCellGauche = (i, j-1)
-                    if i-1 >= 0:
-                        self.neighbors[(i, j)].add(tempCellHaut)
-                        self.neighbors[tempCellHaut].add((i, j))
-                    if j+1 < width:
-                        self.neighbors[(i, j)].add(tempCellDroite)
-                    if i+1 < height:
-                        self.neighbors[(i, j)].add(tempCellBas)
-                    if j-1 >= 0:
-                        self.neighbors[(i, j)].add(tempCellGauche)
+        if empty:
+            for sommet in self.neighbors.keys():
+                
+                    
 
     def info(self):
         """
