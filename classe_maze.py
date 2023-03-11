@@ -7,7 +7,16 @@ class Maze:
       - clés : sommets
       - valeurs : ensemble des sommets voisins accessibles
     """
-    def __init__(self, height, width, empty):
+
+
+
+    """/////////////////////////////////////////////////////////////////
+                            - Constructeur -
+    /////////////////////////////////////////////////////////////////"""
+
+
+
+    def __init__(self, height, width, empty=False):
         """
         Constructeur d'un labyrinthe de height cellules de haut 
         et de width cellules de large.
@@ -17,11 +26,30 @@ class Maze:
         self.height    = height
         self.width     = width
         self.empty     = empty
-        self.neighbors = {(i,j): set() for i in range(height) for j in range (width)}
+        #Par défaut, on initialise le labyrinthe avec des ensembles vides
+        self.neighbors = {(i,j): set() for i in range(height) for j in range (width)} 
         if empty:
-            for sommet in self.neighbors.keys():
-                
-                    
+            #Pour toutes les cellules.
+            for i in range(self.height):
+                for j in range(self.width):       
+                    #On vérifie que ses voisins ne sont pas en dehors du laby.              
+                    if (i - 1) >= 0:                            
+                        #Si c'est ok on les ajoute à la cellule actuelle.
+                        self.neighbors[(i,j)].add((i-1,j))      
+                    if (j + 1) < width:
+                        self.neighbors[(i,j)].add((i,j+1))
+                    if (i + 1) < height:
+                        self.neighbors[(i,j)].add((i+1,j))
+                    if (j - 1) >= 0:
+                        self.neighbors[(i,j)].add((i,j-1))
+
+
+
+    """/////////////////////////////////////////////////////////////////
+                        - Méthodes d'affichage -
+    /////////////////////////////////////////////////////////////////"""
+
+
 
     def info(self):
         """
@@ -80,3 +108,18 @@ class Maze:
         txt += "━━━┛\n"
 
         return txt
+
+
+
+    """/////////////////////////////////////////////////////////////////
+                        - Méthodes de modification -
+    /////////////////////////////////////////////////////////////////"""
+
+
+
+    def add_wall(c1, c2):
+        """
+        Permet d'ajouter un mur entre une cellule(c1) et une cellule(c2).
+        """
+        self.neighbors[c1].remove(c2)
+        self.neighbors[c2].remove(c1)
