@@ -16,7 +16,7 @@ class Maze:
 
 
 
-    def __init__(self, height, width, empty=False):
+    def __init__(self, height: int, width: int, empty: bool =False) -> None:
         """
         Constructeur d'un labyrinthe de height cellules de haut 
         et de width cellules de large.
@@ -36,12 +36,13 @@ class Maze:
                     if (i - 1) >= 0:                            
                         #Si c'est ok on les ajoute à la cellule actuelle.
                         self.neighbors[(i,j)].add((i-1,j))      
-                    if (j + 1) < width:
+                    if (j + 1) < self.width:
                         self.neighbors[(i,j)].add((i,j+1))
-                    if (i + 1) < height:
+                    if (i + 1) < self.height:
                         self.neighbors[(i,j)].add((i+1,j))
                     if (j - 1) >= 0:
                         self.neighbors[(i,j)].add((i,j-1))
+        return
 
 
 
@@ -108,6 +109,79 @@ class Maze:
         txt += "━━━┛\n"
 
         return txt
+    
+
+
+    """/////////////////////////////////////////////////////////////////
+                            - Méthodes d'accès -
+    /////////////////////////////////////////////////////////////////"""
+
+
+
+    def get_cells(self) -> list:
+        """
+        Retourne la liste de toutes les cellules de la grille du labyrinthe
+        """
+        L = []
+        for i in range(self.height):
+            for j in range(self.width):
+                L.append((i,j))
+        return L
+    
+    def get_walls(self) -> list:
+        """
+        Retourne la liste de tous les murs du laby sous la forme d'une liste
+        de tuples de cellules.
+        """
+        L = []
+        for i in range(self.height):
+            for j in range(self.width):
+                if j+1 < self.width and (i,j+1) not in self.neighbors[(i,j)]:
+                    L.append([(i,j), (i,j+1)])
+                if i+1 < self.height and (i+1,j) not in self.neighbors[(i,j)]:
+                    L.append([(i,j), (i+1,j)])
+        return L
+    
+    def get_contiguous_cells(self, c: tuple) -> list:
+        """
+        Retourne la liste des cellules contigües à c dans la grille 
+        (sans s occuper des éventuels murs).
+        """
+        L = []
+        i = c[0]
+        j = c[1]
+        #On vérifie que les cellules ne soient pas en dehors du laby.              
+        if (i - 1) >= 0:                            
+            #Si c'est ok on les ajoute à la liste.
+            L.append((i-1,j))      
+        if (i + 1) < self.height:
+            L.append((i+1,j))
+        if (j - 1) >= 0:
+            L.append((i,j-1))
+        if (j + 1) < self.width:
+            L.append((i,j+1))
+        return L
+        
+    def get_reachable_cells(self, c: tuple) -> list:
+        """
+        Retourne la liste des cellules accessibles depuis c (c est-à-dire 
+        les cellules contiguës à c qui sont dans le voisinage de c)
+        """
+        L = []
+        i = c[0]
+        j = c[1]
+        #On vérifie que les cellules ne soient pas en dehors du laby et si elles
+        # sont dans le voisinage de c.              
+        if (i - 1) >= 0 and ( (i-1,j) in self.neighbors[(i,j)] and (i,j) in self.neighbors[(i-1,j)] ):                            
+            #Si c'est ok on les ajoute à la liste.
+            L.append((i-1,j))      
+        if (i + 1) < self.height and ( (i+1,j) in self.neighbors[(i,j)] and (i,j) in self.neighbors[(i+1,j)] ):
+            L.append((i+1,j))
+        if (j - 1) >= 0 and ( (i,j-1) in self.neighbors[(i,j)] and (i,j) in self.neighbors[(i,j-1)] ):
+            L.append((i,j-1))
+        if (j + 1) < self.width and ( (i,j+1) in self.neighbors[(i,j)] and (i,j) in self.neighbors[(i,j+1)] ):
+            L.append((i,j+1))
+        return L
 
 
 
@@ -117,9 +191,68 @@ class Maze:
 
 
 
-    def add_wall(c1, c2):
+    def add_wall(self, c1: tuple, c2: tuple) -> None:
         """
         Permet d'ajouter un mur entre une cellule(c1) et une cellule(c2).
         """
-        self.neighbors[c1].remove(c2)
-        self.neighbors[c2].remove(c1)
+        # Facultatif : on teste si les sommets sont bien dans le labyrinthe
+        assert 0 <= c1[0] < self.height and \
+            0 <= c1[1] < self.width and \
+            0 <= c2[0] < self.height and \
+            0 <= c2[1] < self.width, \
+            f"Erreur lors de l'ajout d'un mur entre {c1} et {c2} : les coordonnées ne sont pas compatibles avec les dimensions du labyrinthe"
+        # Ajout du mur
+        if c2 in self.neighbors[c1]:      # Si c2 est dans les voisines de c1
+            self.neighbors[c1].remove(c2) # on le retire
+        if c1 in self.neighbors[c2]:      # Si c3 est dans les voisines de c2
+            self.neighbors[c2].remove(c1) # on le retire
+        return
+
+    def remove_wall(self, c1: tuple, c2: tuple) -> None:
+        """
+        Permet de supprimer un mur entre une cellule(c1) et une cellule(c2).
+        """
+        # Facultatif : on teste si les sommets sont bien dans le labyrinthe
+        assert 0 <= c1[0] < self.height and \
+            0 <= c1[1] < self.width and \
+            0 <= c2[0] < self.height and \
+            0 <= c2[1] < self.width, \
+            f"Erreur lors de l'ajout d'un mur entre {c1} et {c2} : les coordonnées ne sont pas compatibles avec les dimensions du labyrinthe"
+        # Suppression du mur
+        if c2 not in self.neighbors[c1]:      # Si c2 n'est pas déjà dans les voisines de c1
+            self.neighbors[c1].add(c2)      # on l'ajoute
+        if c1 not in self.neighbors[c2]:      # Si c3 n'est pas déjà dans les voisines de c2
+            self.neighbors[c2].add(c1)      # on l'ajoute
+        return
+
+    def fill(self) -> None:
+        """
+        Ajoute tous les murs possible dans le labyrinthe.
+        """
+        for cell in self.neighbors.keys():
+            self.neighbors[cell] = set()
+        return
+    
+    def be_empty(self) -> None:
+        """
+        Supprime tous les murs du labyrinthe.
+
+        On va se baser sur le code du constructeur de la classe
+        en l'adaptant pour qu'il vérifie si il n'y a pas déjà de
+        passage d'une cellule à l'autre. Cela évitera les voisins
+        en double dans certaines cellules.
+        """
+        for i in range(self.height):
+            for j in range(self.width):       
+                #On vérifie que ses voisins ne sont pas en dehors du laby et
+                # pas déjà dans la liste des voisins.              
+                if (i - 1) >= 0 and (i - 1) not in self.neighbors[(i,j)]:                            
+                    #Si c'est ok on les ajoute à la cellule actuelle.
+                    self.neighbors[(i,j)].add((i-1,j))      
+                if (j + 1) < self.width and (j + 1) not in self.neighbors[(i,j)]:
+                    self.neighbors[(i,j)].add((i,j+1))
+                if (i + 1) < self.height and (i + 1) not in self.neighbors[(i,j)]:
+                    self.neighbors[(i,j)].add((i+1,j))
+                if (j - 1) >= 0 and (j - 1) not in self.neighbors[(i,j)]:
+                    self.neighbors[(i,j)].add((i,j-1))
+        return
