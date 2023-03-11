@@ -127,6 +127,61 @@ class Maze:
             for j in range(self.width):
                 L.append((i,j))
         return L
+    
+    def get_walls(self) -> list:
+        """
+        Retourne la liste de tous les murs du laby sous la forme d'une liste
+        de tuples de cellules.
+        """
+        L = []
+        for i in range(self.height):
+            for j in range(self.width):
+                if j+1 < self.width and (i,j+1) not in self.neighbors[(i,j)]:
+                    L.append([(i,j), (i,j+1)])
+                if i+1 < self.height and (i+1,j) not in self.neighbors[(i,j)]:
+                    L.append([(i,j), (i+1,j)])
+        return L
+    
+    def get_contiguous_cells(self, c: tuple) -> list:
+        """
+        Retourne la liste des cellules contigües à c dans la grille 
+        (sans s occuper des éventuels murs).
+        """
+        L = []
+        i = c[0]
+        j = c[1]
+        #On vérifie que les cellules ne soient pas en dehors du laby.              
+        if (i - 1) >= 0:                            
+            #Si c'est ok on les ajoute à la liste.
+            L.append((i-1,j))      
+        if (i + 1) < self.height:
+            L.append((i+1,j))
+        if (j - 1) >= 0:
+            L.append((i,j-1))
+        if (j + 1) < self.width:
+            L.append((i,j+1))
+        return L
+        
+    def get_reachable_cells(self, c: tuple) -> list:
+        """
+        Retourne la liste des cellules accessibles depuis c (c est-à-dire 
+        les cellules contiguës à c qui sont dans le voisinage de c)
+        """
+        L = []
+        i = c[0]
+        j = c[1]
+        #On vérifie que les cellules ne soient pas en dehors du laby et si elles
+        # sont dans le voisinage de c.              
+        if (i - 1) >= 0 and ( (i-1,j) in self.neighbors[(i,j)] and (i,j) in self.neighbors[(i-1,j)] ):                            
+            #Si c'est ok on les ajoute à la liste.
+            L.append((i-1,j))      
+        if (i + 1) < self.height and ( (i+1,j) in self.neighbors[(i,j)] and (i,j) in self.neighbors[(i+1,j)] ):
+            L.append((i+1,j))
+        if (j - 1) >= 0 and ( (i,j-1) in self.neighbors[(i,j)] and (i,j) in self.neighbors[(i,j-1)] ):
+            L.append((i,j-1))
+        if (j + 1) < self.width and ( (i,j+1) in self.neighbors[(i,j)] and (i,j) in self.neighbors[(i,j+1)] ):
+            L.append((i,j+1))
+        return L
 
 
 
