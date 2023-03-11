@@ -172,8 +172,32 @@ class Maze:
 
     def fill(self) -> None:
         """
-        Ajoute tous les murs possible dans le labyrinthe..
+        Ajoute tous les murs possible dans le labyrinthe.
         """
         for cell in self.neighbors.keys():
             self.neighbors[cell] = set()
+        return
+    
+    def be_empty(self) -> None:
+        """
+        Supprime tous les murs du labyrinthe.
+
+        On va se baser sur le code du constructeur de la classe
+        en l'adaptant pour qu'il vérifie si il n'y a pas déjà de
+        passage d'une cellule à l'autre. Cela évitera les voisins
+        en double dans certaines cellules.
+        """
+        for i in range(self.height):
+            for j in range(self.width):       
+                #On vérifie que ses voisins ne sont pas en dehors du laby et
+                # pas déjà dans la liste des voisins.              
+                if (i - 1) >= 0 and (i - 1) not in self.neighbors[(i,j)]:                            
+                    #Si c'est ok on les ajoute à la cellule actuelle.
+                    self.neighbors[(i,j)].add((i-1,j))      
+                if (j + 1) < self.width and (j + 1) not in self.neighbors[(i,j)]:
+                    self.neighbors[(i,j)].add((i,j+1))
+                if (i + 1) < self.height and (i + 1) not in self.neighbors[(i,j)]:
+                    self.neighbors[(i,j)].add((i+1,j))
+                if (j - 1) >= 0 and (j - 1) not in self.neighbors[(i,j)]:
+                    self.neighbors[(i,j)].add((i,j-1))
         return
