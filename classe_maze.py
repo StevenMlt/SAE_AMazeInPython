@@ -1,3 +1,5 @@
+from random import *
+
 class Maze:
     """
     Classe Labyrinthe
@@ -22,6 +24,12 @@ class Maze:
         et de width cellules de large.
         L'argument empty indique si le graphe doit être créé avec 
         aucun mur (True), ou avec tous les murs (False).
+
+        Args:
+            height (int): Nombre de lignes du labyrinthe
+            width (int): Nombre de colonnes du labyrinthe
+            empty (bool, optional): Le labyrinthe sera créé sans aucun mur (True), 
+                                    l'inverse (False) par défaut.
         """
         self.height    = height
         self.width     = width
@@ -146,6 +154,12 @@ class Maze:
         """
         Retourne la liste des cellules contigües à c dans la grille 
         (sans s occuper des éventuels murs).
+
+        Args:
+            c (tuple): Cellule visée (i, j)
+
+        Returns:
+            list: Liste des cellules contigües.
         """
         L = []
         i = c[0]
@@ -166,6 +180,12 @@ class Maze:
         """
         Retourne la liste des cellules accessibles depuis c (c est-à-dire 
         les cellules contiguës à c qui sont dans le voisinage de c)
+        
+        Args:
+            c (tuple): Cellule visée (i, j)
+
+        Returns:
+            list: Liste des cellules accessibles.
         """
         L = []
         i = c[0]
@@ -194,6 +214,10 @@ class Maze:
     def add_wall(self, c1: tuple, c2: tuple) -> None:
         """
         Permet d'ajouter un mur entre une cellule(c1) et une cellule(c2).
+
+        Args:
+            c1 (tuple): Première coordonnée de cellule (i, j)
+            c2 (tuple): Deuxième coordonnée de cellule (i, j)
         """
         # Facultatif : on teste si les sommets sont bien dans le labyrinthe
         assert 0 <= c1[0] < self.height and \
@@ -211,6 +235,10 @@ class Maze:
     def remove_wall(self, c1: tuple, c2: tuple) -> None:
         """
         Permet de supprimer un mur entre une cellule(c1) et une cellule(c2).
+
+        Args:
+            c1 (tuple): Première coordonnée de cellule (i, j)
+            c2 (tuple): Deuxième coordonnée de cellule (i, j)
         """
         # Facultatif : on teste si les sommets sont bien dans le labyrinthe
         assert 0 <= c1[0] < self.height and \
@@ -256,3 +284,107 @@ class Maze:
                 if (j - 1) >= 0 and (j - 1) not in self.neighbors[(i,j)]:
                     self.neighbors[(i,j)].add((i,j-1))
         return
+    
+        
+
+    """/////////////////////////////////////////////////////////////////
+                           - Méthodes de classe -
+    /////////////////////////////////////////////////////////////////"""
+
+
+
+    @classmethod
+    def gen_btree(cls, h: int, w: int) -> object:
+        """
+        Génère un labyrinthe à h lignes et w colonnes, en utilisant l algorithme 
+        de construction par arbre binaire.
+        
+        On fera attention à vérifier si les cellules adjacentes sont bien dans la 
+        grille avant de tenter de supprimer un mur.
+
+        Args:
+            h (int): Nombre de lignes du laby
+            w (int): Nombre de colonnes du laby
+
+        Returns:
+            object: Le labyrinthe
+        """
+        # On initialise un laby plein
+        laby = Maze(h, w, False)
+        # Pour toutes les cellules du laby
+        for i in range(laby.height):
+            for j in range(laby.width):
+                # Si les deux murs EST et SUD sont présents
+                if (i,j+1) not in laby.neighbors[(i,j)] and (i+1,j) not in laby.neighbors[(i,j)] and j+1 < w and i+1 < h:
+                    # On choisi aléatoirement quel mur enlever
+                    temp = randint(0,1)
+                    if temp == 1:
+                        # Mur EST
+                        laby.neighbors[(i,j)].add((i,j+1))
+                        laby.neighbors[(i,j+1)].add((i,j))
+                    if temp == 0:
+                        # Mur SUD
+                        laby.neighbors[(i,j)].add((i+1,j))
+                        laby.neighbors[(i+1,j)].add((i,j))
+                # Si il n'y a qu'un seul des deux murs ou aucun
+                else:
+                    # Si il n'y a que le mur EST
+                    if (i,j+1) not in laby.neighbors[(i,j)] and j+1 < w:
+                        laby.neighbors[(i,j)].add((i,j+1))
+                        laby.neighbors[(i,j+1)].add((i,j))
+                    # Si il n'y a que le mur SUD
+                    if (i+1,j) not in laby.neighbors[(i,j)] and i+1 < h:
+                        laby.neighbors[(i,j)].add((i+1,j))
+                        laby.neighbors[(i+1,j)].add((i,j))
+        return laby
+    
+    @classmethod
+    def gen_sidewinder(cls, h: int, w: int) -> object:
+        """
+        Génère une labyrinthe à h lignes et w colonnes, en utilisant l algorithme 
+        de construction par arbre binaire.
+
+        Args:
+            h (int): Nombre de lignes du laby
+            w (int): Nombre de colonnes du laby
+
+        Returns:
+            object: Le labyrinthe généré
+        """
+        # On initialise un laby plein
+        laby = Maze(h, w, False)
+        for i in range(h-1):
+            #On initialise une séquence vide (liste)
+            seq = []
+            for j in range(w-1):
+                # On initialise la variable dernière cellule qui nous servira pour récupérer
+                # la dernière cellule de la séquence
+                lastCell = (i,j+1)
+                seq.append((i,j))
+                # Pile ou face
+                pile = 1
+                face = 0
+                if randint(0,1) == pile:
+                    # Si pile on casse le mur EST
+                    laby.neighbors[(i,j)].add((i,j+1))
+                    laby.neighbors[(i,j+1)].add((i,j))
+                else:
+                    # Si face on casse le mur SUD d'une cellule de la séquence choisie au hasard
+                    randomCell = choice(seq)
+                    laby.neighbors[randomCell].add((randomCell[0]+1, randomCell[1]))
+                    laby.neighbors[(randomCell[0]+1, randomCell[1])].add(randomCell)
+                    # On réinitialise la séquence
+                    seq = []
+            # On ajoute la dernière cellule à la séquence
+            seq.append(lastCell)
+            # On casse le mur SUD d'une cellule de la séquence choisie au hasard
+            randomCell = choice(seq)
+            laby.neighbors[randomCell].add((randomCell[0]+1, randomCell[1]))
+            laby.neighbors[(randomCell[0]+1, randomCell[1])].add(randomCell)
+        # On casse tous les murs EST de la dernière ligne
+        for j in range(w-1):
+            laby.neighbors[(h-1,j)].add((h-1,j+1))
+            laby.neighbors[(h-1,j+1)].add((h-1,j))
+        return laby
+        
+                
