@@ -362,9 +362,7 @@ class Maze:
                 lastCell = (i,j+1)
                 seq.append((i,j))
                 # Pile ou face
-                pile = 1
-                face = 0
-                if randint(0,1) == pile:
+                if randint(0,1) == 1:
                     # Si pile on casse le mur EST
                     laby.neighbors[(i,j)].add((i,j+1))
                     laby.neighbors[(i,j+1)].add((i,j))
@@ -387,4 +385,46 @@ class Maze:
             laby.neighbors[(h-1,j+1)].add((h-1,j))
         return laby
         
-                
+    @classmethod
+    def gen_fusion(cls, h: int, w: int) -> object:
+        """
+        Génère un labyrinthe, à h lignes et w colonnes, parfait, avec l algorithme
+        de fusion de chemin.
+
+        Args:
+            h (int): Nombre de lignes du laby
+            w (int): Nombre de colonnes du laby
+
+        Returns:
+            object: Le labyrinthe généré
+        """                
+        # On initialise un laby plein
+        laby = Maze(h, w, False)
+        dictLabel = {}
+        intLabel = 1
+        for i in range(h):
+            for j in range(w):
+                dictLabel[(i,j)] = intLabel
+                intLabel += 1
+        listWalls = laby.get_walls()
+        shuffle(listWalls)
+        
+        # Pour chaque mur de la liste
+        for wall in listWalls:
+            if dictLabel[wall[0]] != dictLabel[wall[1]]:
+                laby.neighbors[wall[0]].add(wall[1])
+                laby.neighbors[wall[1]].add(wall[0])
+                # Pile ou face
+                if randint(0,1) == 1:
+                    labelAutreCell = dictLabel[wall[1]]
+                    dictLabel[wall[1]] = dictLabel[wall[0]]
+                    for cell in dictLabel.keys():
+                        if dictLabel[cell] == labelAutreCell:
+                            dictLabel[cell] = dictLabel[wall[0]]
+                else:
+                    labelAutreCell = dictLabel[wall[0]]
+                    dictLabel[wall[0]] = dictLabel[wall[1]]
+                    for cell in dictLabel.keys():
+                        if dictLabel[cell] == labelAutreCell:
+                            dictLabel[cell] = dictLabel[wall[1]]
+        return laby
