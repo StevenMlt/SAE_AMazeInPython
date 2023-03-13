@@ -400,28 +400,37 @@ class Maze:
         """                
         # On initialise un laby plein
         laby = Maze(h, w, False)
+        # On crée un dictionnaire de labels où on associe à chaque cellule (clé) un label (valeur)
         dictLabel = {}
         intLabel = 1
         for i in range(h):
             for j in range(w):
                 dictLabel[(i,j)] = intLabel
                 intLabel += 1
+        # On récupère la liste des murs, puis on la mélange
         listWalls = laby.get_walls()
         shuffle(listWalls)
         
         # Pour chaque mur de la liste
         for wall in listWalls:
+            # Si les deux cellules séparées par le mur n’ont pas le même label
             if dictLabel[wall[0]] != dictLabel[wall[1]]:
+                # On casse le mur entre les deux cellules
                 laby.neighbors[wall[0]].add(wall[1])
                 laby.neighbors[wall[1]].add(wall[0])
                 # Pile ou face
                 if randint(0,1) == 1:
+                    # On récupère le label de la cellule non choisie dans labelAutreCell
                     labelAutreCell = dictLabel[wall[1]]
+                    # On affecte le label de la cellule choisie à l'autre
                     dictLabel[wall[1]] = dictLabel[wall[0]]
+                    # Pour toutes les cellules qui ont le même label que la cellule non choisie
+                    # on affecte le label de la cellule choisie
                     for cell in dictLabel.keys():
                         if dictLabel[cell] == labelAutreCell:
                             dictLabel[cell] = dictLabel[wall[0]]
                 else:
+                    # Ici, même principe que juste avant mais en inversant les deux cellules
                     labelAutreCell = dictLabel[wall[0]]
                     dictLabel[wall[0]] = dictLabel[wall[1]]
                     for cell in dictLabel.keys():
