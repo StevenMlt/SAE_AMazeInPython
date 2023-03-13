@@ -337,3 +337,54 @@ class Maze:
                         laby.neighbors[(i,j)].add((i+1,j))
                         laby.neighbors[(i+1,j)].add((i,j))
         return laby
+    
+    @classmethod
+    def gen_sidewinder(cls, h: int, w: int) -> object:
+        """
+        Génère une labyrinthe à h lignes et w colonnes, en utilisant l algorithme 
+        de construction par arbre binaire.
+
+        Args:
+            h (int): Nombre de lignes du laby
+            w (int): Nombre de colonnes du laby
+
+        Returns:
+            object: Le labyrinthe généré
+        """
+        # On initialise un laby plein
+        laby = Maze(h, w, False)
+        for i in range(h-1):
+            #On initialise une séquence vide (liste)
+            seq = []
+            for j in range(w-1):
+                # On initialise la variable dernière cellule qui nous servira pour récupérer
+                # la dernière cellule de la séquence
+                lastCell = (i,j+1)
+                seq.append((i,j))
+                # Pile ou face
+                pile = 1
+                face = 0
+                if randint(0,1) == pile:
+                    # Si pile on casse le mur EST
+                    laby.neighbors[(i,j)].add((i,j+1))
+                    laby.neighbors[(i,j+1)].add((i,j))
+                else:
+                    # Si face on casse le mur SUD d'une cellule de la séquence choisie au hasard
+                    randomCell = choice(seq)
+                    laby.neighbors[randomCell].add((randomCell[0]+1, randomCell[1]))
+                    laby.neighbors[(randomCell[0]+1, randomCell[1])].add(randomCell)
+                    # On réinitialise la séquence
+                    seq = []
+            # On ajoute la dernière cellule à la séquence
+            seq.append(lastCell)
+            # On casse le mur SUD d'une cellule de la séquence choisie au hasard
+            randomCell = choice(seq)
+            laby.neighbors[randomCell].add((randomCell[0]+1, randomCell[1]))
+            laby.neighbors[(randomCell[0]+1, randomCell[1])].add(randomCell)
+        # On casse tous les murs EST de la dernière ligne
+        for j in range(w-1):
+            laby.neighbors[(h-1,j)].add((h-1,j+1))
+            laby.neighbors[(h-1,j+1)].add((h-1,j))
+        return laby
+        
+                
