@@ -516,12 +516,45 @@ class Maze:
         # On choisit une cellule au hasard parmis la liste des cellules
         randomCell = choice(nonMarque)
         # Puis on la marque
-        marque.append(nonMarque.pop(randomCell))
+        marque.append(nonMarque.pop(nonMarque.index(randomCell)))
         
         while nonMarque != []:
-            marche = []
+            chemin = []
             startCell = choice(nonMarque)
-            firstStep = randint(1,4)
+            chemin.append(startCell)
+            
+            tempCell = startCell
+            markedCellFound = False
+            
+            nextCell = choice(laby.get_contiguous_cells(tempCell))
+            chemin.append(nextCell)
+            tempCell = nextCell
+            if nextCell in marque:
+                markedCellFound = True
+                
+            serpentMordu = False
+            while not markedCellFound and not serpentMordu:
+                nextCell = choice(laby.get_contiguous_cells(tempCell))
+                while nextCell == chemin[-2]:
+                    nextCell = choice(laby.get_contiguous_cells(tempCell))
+                if nextCell in chemin:
+                    serpentMordu = True 
+                elif nextCell in marque:
+                    markedCellFound = True
+                else:
+                    tempCell = nextCell
+                    chemin.append(tempCell)
+            print(chemin)
+            if markedCellFound:
+                for cell in chemin:
+                    if cell in nonMarque:
+                        marque.append(nonMarque.pop(nonMarque.index(cell)))
+                for i in range(len(chemin)-1):
+                    laby.neighbors[chemin[i]].add(chemin[i+1])
+                    laby.neighbors[chemin[i+1]].add(chemin[i])
+                    
+        return laby
+                
             
             
             
