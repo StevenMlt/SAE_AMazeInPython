@@ -118,6 +118,51 @@ class Maze:
 
         return txt
     
+    def overlay(self, content=None):
+        """
+        Rendu en mode texte, sur la sortie standard, \
+        d'un labyrinthe avec du contenu dans les cellules
+        Argument:
+            content (dict) : dictionnaire tq content[cell] contient le caractère à afficher au milieu de la cellule
+        Retour:
+            string
+        """
+        if content is None:
+            content = {(i,j):' ' for i in range(self.height) for j in range(self.width)}
+        else:
+            # Python >=3.9
+            #content = content | {(i, j): ' ' for i in range(
+            #    self.height) for j in range(self.width) if (i,j) not in content}
+            # Python <3.9
+            new_content = {(i, j): ' ' for i in range(self.height) for j in range(self.width) if (i,j) not in content}
+            content = {**content, **new_content}
+        txt = r""
+        # Première ligne
+        txt += "┏"
+        for j in range(self.width-1):
+            txt += "━━━┳"
+        txt += "━━━┓\n"
+        txt += "┃"
+        for j in range(self.width-1):
+            txt += " "+content[(0,j)]+" ┃" if (0,j+1) not in self.neighbors[(0,j)] else " "+content[(0,j)]+"  "
+        txt += " "+content[(0,self.width-1)]+" ┃\n"
+        # Lignes normales
+        for i in range(self.height-1):
+            txt += "┣"
+            for j in range(self.width-1):
+                txt += "━━━╋" if (i+1,j) not in self.neighbors[(i,j)] else "   ╋"
+            txt += "━━━┫\n" if (i+1,self.width-1) not in self.neighbors[(i,self.width-1)] else "   ┫\n"
+            txt += "┃"
+            for j in range(self.width):
+                txt += " "+content[(i+1,j)]+" ┃" if (i+1,j+1) not in self.neighbors[(i+1,j)] else " "+content[(i+1,j)]+"  "
+            txt += "\n"
+        # Bas du tableau
+        txt += "┗"
+        for i in range(self.width-1):
+            txt += "━━━┻"
+        txt += "━━━┛\n"
+        return txt
+    
 
 
     """/////////////////////////////////////////////////////////////////
@@ -285,6 +330,33 @@ class Maze:
                     self.neighbors[(i,j)].add((i,j-1))
         return
     
+    
+    
+    """/////////////////////////////////////////////////////////////////
+                             - Méthodes autres -
+    /////////////////////////////////////////////////////////////////"""
+    
+        
+        
+    def solve_dfs(self, start: tuple, stop: tuple) -> list:
+        """
+        Algorithme de résolution par parcours en profondeur du labyrinthe.
+
+        Args:
+            start (tuple): Cellule de départ du parcours
+            stop (tuple): Cellule d'arrivée du parcours
+
+        Returns:
+            list: Chemin parcouru par l'algorithme
+        """        
+        pile = [start]
+        marquage = [start]
+        predecesseur = start 
+        
+        while len(marquage) != len(self.get_cells):
+            c = pile.pop(0)
+            if c == stop
+        
         
 
     """/////////////////////////////////////////////////////////////////
@@ -362,9 +434,7 @@ class Maze:
                 lastCell = (i,j+1)
                 seq.append((i,j))
                 # Pile ou face
-                pile = 1
-                face = 0
-                if randint(0,1) == pile:
+                if randint(0,1) == 1:
                     # Si pile on casse le mur EST
                     laby.neighbors[(i,j)].add((i,j+1))
                     laby.neighbors[(i,j+1)].add((i,j))
@@ -387,4 +457,178 @@ class Maze:
             laby.neighbors[(h-1,j+1)].add((h-1,j))
         return laby
         
+    @classmethod
+    def gen_fusion(cls, h: int, w: int) -> object:
+        """
+        Génère un labyrinthe, à h lignes et w colonnes, parfait, avec l algorithme
+        de fusion de chemin.
+
+        Args:
+            h (int): Nombre de lignes du laby
+            w (int): Nombre de colonnes du laby
+
+        Returns:
+            object: Le labyrinthe généré
+        """                
+        # On initialise un laby plein
+        laby = Maze(h, w, False)
+        # On crée un dictionnaire de labels où on associe à chaque cellule (clé) un label (valeur)
+        dictLabel = {}
+        intLabel = 1
+        for i in range(h):
+            for j in range(w):
+                dictLabel[(i,j)] = intLabel
+                intLabel += 1
+        # On récupère la liste des murs, puis on la mélange
+        listWalls = laby.get_walls()
+        shuffle(listWalls)
+        
+        # Pour chaque mur de la liste
+        for wall in listWalls:
+            # Si les deux cellules séparées par le mur n’ont pas le même label
+            if dictLabel[wall[0]] != dictLabel[wall[1]]:
+                # On casse le mur entre les deux cellules
+                laby.neighbors[wall[0]].add(wall[1])
+                laby.neighbors[wall[1]].add(wall[0])
+                # Pile ou face
+                if randint(0,1) == 1:
+                    # On récupère le label de la cellule non choisie dans labelAutreCell
+                    labelAutreCell = dictLabel[wall[1]]
+                    # On affecte le label de la cellule choisie à l'autre
+                    dictLabel[wall[1]] = dictLabel[wall[0]]
+                    # Pour toutes les cellules qui ont le même label que la cellule non choisie
+                    # on affecte le label de la cellule choisie
+                    for cell in dictLabel.keys():
+                        if dictLabel[cell] == labelAutreCell:
+                            dictLabel[cell] = dictLabel[wall[0]]
+                else:
+                    # Ici, même principe que juste avant mais en inversant les deux cellules
+                    labelAutreCell = dictLabel[wall[0]]
+                    dictLabel[wall[0]] = dictLabel[wall[1]]
+                    for cell in dictLabel.keys():
+                        if dictLabel[cell] == labelAutreCell:
+                            dictLabel[cell] = dictLabel[wall[1]]
+        return laby
+    
+    @classmethod
+    def gen_exploration(cls, h: int, w: int) -> object:
+        """
+        Génère un labyrinthe, à h lignes et w colonnes, parfait, avec l algorithme
+        d exploration exhaustive.
+
+        Args:
+            h (int): Nombre de lignes du laby
+            w (int): Nombre de colonnes du laby
+
+        Returns:
+            object: Le labyrinthe généré
+        """        
+        # On initialise un laby plein, la liste des cellules du laby,
+        # une pile vide et la liste des cellules marquées/visitées
+        laby = Maze(h, w, False)
+        cells = laby.get_cells()
+        pile = []
+        visites = []
+        # On choisit une cellule au hasard parmis la liste des cellules
+        randomCell = choice(cells)
+        # Puis on la marque et l'ajoute à la pile
+        visites.append(randomCell)
+        pile.append(randomCell)
+        
+        while pile != []:
+            # On prend la cellule en haut de la pile
+            tempCell = pile.pop()
+            # On regarde si la cellule a des voisins qui n'ont pas été
+            # visités (pas présents dans visites)
+            voisinsNonVisites = False
+            for voisin in laby.get_contiguous_cells(tempCell):
+                if voisin not in visites:
+                    voisinsNonVisites = True
+                    
+            # Si c'est le cas
+            if voisinsNonVisites:
+                # On remet la cellule en haut de la pile
+                pile.append(tempCell)
+                # On choisit au hasard une des cellules contigües, en 
+                # recommençant au besoin si elle a déjà été visitée
+                contiguousCell = choice(laby.get_contiguous_cells(tempCell))
+                while contiguousCell in visites:
+                    contiguousCell = choice(laby.get_contiguous_cells(tempCell))
+            
+                # On casse le mur entre la cellule de départ et celle
+                # dernièrement choisie
+                laby.neighbors[tempCell].add(contiguousCell)
+                laby.neighbors[contiguousCell].add(tempCell)
+
+                # Finalement on marque la dernière cellule choisie et
+                # on l'ajoute en haut de la pile
+                visites.append(contiguousCell)
+                pile.append(contiguousCell)
+            
+        return laby
+    
+    @classmethod
+    def gen_wilson(cls, h: int, w: int) -> object:
+        """
+        Génère un labyrinthe, à h lignes et w colonnes, parfait, avec l algorithme
+        de Wilson.
+
+        Args:
+            h (int): Nombre de lignes du laby
+            w (int): Nombre de colonnes du laby
+
+        Returns:
+            object: Le labyrinthe généré
+        """      
+        # On initialise un laby plein, la liste des cellules du laby
+        # et la liste des cellules marquées
+        laby = Maze(h, w, False)
+        nonMarque = laby.get_cells()
+        marque = []
+        # On choisit une cellule au hasard parmis la liste des cellules
+        randomCell = choice(nonMarque)
+        # Puis on la marque
+        marque.append(nonMarque.pop(nonMarque.index(randomCell)))
+        
+        while nonMarque != []:
+            chemin = []
+            startCell = choice(nonMarque)
+            chemin.append(startCell)
+            
+            tempCell = startCell
+            markedCellFound = False
+            
+            nextCell = choice(laby.get_contiguous_cells(tempCell))
+            chemin.append(nextCell)
+            tempCell = nextCell
+            if nextCell in marque:
+                markedCellFound = True
                 
+            serpentMordu = False
+            while not markedCellFound and not serpentMordu:
+                nextCell = choice(laby.get_contiguous_cells(tempCell))
+                while nextCell == chemin[-2]:
+                    nextCell = choice(laby.get_contiguous_cells(tempCell))
+                if nextCell in chemin:
+                    serpentMordu = True 
+                elif nextCell in marque:
+                    markedCellFound = True
+                else:
+                    tempCell = nextCell
+                    chemin.append(tempCell)
+            print(chemin)
+            if markedCellFound:
+                for cell in chemin:
+                    if cell in nonMarque:
+                        marque.append(nonMarque.pop(nonMarque.index(cell)))
+                for i in range(len(chemin)-1):
+                    laby.neighbors[chemin[i]].add(chemin[i+1])
+                    laby.neighbors[chemin[i+1]].add(chemin[i])
+                    
+        return laby
+                
+            
+            
+            
+        
+        
