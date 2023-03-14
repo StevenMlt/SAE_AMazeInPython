@@ -494,4 +494,36 @@ class Maze:
                 pile.append(contiguousCell)
             
         return laby
+    
+    @classmethod
+    def gen_wilson(cls, h: int, w: int) -> object:
+        """
+        Génère un labyrinthe, à h lignes et w colonnes, parfait, avec l algorithme
+        de Wilson.
+
+        Args:
+            h (int): Nombre de lignes du laby
+            w (int): Nombre de colonnes du laby
+
+        Returns:
+            object: Le labyrinthe généré
+        """      
+        # On initialise un laby plein, la liste des cellules du laby
+        # et la liste des cellules marquées
+        laby = Maze(h, w, False)
+        nonMarque = laby.get_cells()
+        marque = []
+        # On choisit une cellule au hasard parmis la liste des cellules
+        randomCell = choice(nonMarque)
+        # Puis on la marque
+        marque.append(nonMarque.pop(randomCell))
+        
+        while nonMarque != []:
+            marche = []
+            startCell = choice(nonMarque)
+            firstStep = randint(1,4)
+            
+            
+            
+        
         
