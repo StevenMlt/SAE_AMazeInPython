@@ -437,3 +437,61 @@ class Maze:
                         if dictLabel[cell] == labelAutreCell:
                             dictLabel[cell] = dictLabel[wall[1]]
         return laby
+    
+    @classmethod
+    def gen_exploration(cls, h: int, w: int) -> object:
+        """
+        Génère un labyrinthe, à h lignes et w colonnes, parfait, avec l algorithme
+        d exploration exhaustive.
+
+        Args:
+            h (int): Nombre de lignes du laby
+            w (int): Nombre de colonnes du laby
+
+        Returns:
+            object: Le labyrinthe généré
+        """        
+        # On initialise un laby plein, la liste des cellules du laby,
+        # une pile vide et la liste des cellules marquées/visitées
+        laby = Maze(h, w, False)
+        cells = laby.get_cells()
+        pile = []
+        visites = []
+        # On choisit une cellule au hasard parmis la liste des cellules
+        randomCell = choice(cells)
+        # Puis on la marque et l'ajoute à la pile
+        visites.append(randomCell)
+        pile.append(randomCell)
+        
+        while pile != []:
+            # On prend la cellule en haut de la pile
+            tempCell = pile.pop()
+            # On regarde si la cellule a des voisins qui n'ont pas été
+            # visités (pas présents dans visites)
+            voisinsNonVisites = False
+            for voisin in laby.get_contiguous_cells(tempCell):
+                if voisin not in visites:
+                    voisinsNonVisites = True
+                    
+            # Si c'est le cas
+            if voisinsNonVisites:
+                # On remet la cellule en haut de la pile
+                pile.append(tempCell)
+                # On choisit au hasard une des cellules contigües, en 
+                # recommençant au besoin si elle a déjà été visitée
+                contiguousCell = choice(laby.get_contiguous_cells(tempCell))
+                while contiguousCell in visites:
+                    contiguousCell = choice(laby.get_contiguous_cells(tempCell))
+            
+                # On casse le mur entre la cellule de départ et celle
+                # dernièrement choisie
+                laby.neighbors[tempCell].add(contiguousCell)
+                laby.neighbors[contiguousCell].add(tempCell)
+
+                # Finalement on marque la dernière cellule choisie et
+                # on l'ajoute en haut de la pile
+                visites.append(contiguousCell)
+                pile.append(contiguousCell)
+            
+        return laby
+        
