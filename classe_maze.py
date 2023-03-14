@@ -349,13 +349,94 @@ class Maze:
         Returns:
             list: Chemin parcouru par l'algorithme
         """        
+        # D = start, A = stop 
+        
+        # On initialise la structure d'attente et le marquage en mettant D dedans
         pile = [start]
         marquage = [start]
-        predecesseur = start 
+        # On établi un compteur (à 1 avec start dans pile) pour connaître le nombre de cellules 
+        # marquées et pouvoir le comparer au nb de cellules total
+        nbCellsMarked = 1
+        # On initialise le dictionnaire des prédecesseurs
+        pred = {start: start}
+        # On vérifie si toutes les cellules ont été marquées, si non on rentre dans la boucle
+        nbCells = len(self.get_cells())
+        while nbCellsMarked < nbCells:
+            # On récupère et enlève la cellule en haut de la pile
+            c = pile.pop()
+            # Si elle ne correspond pas à A
+            if c != stop:
+                # Pour chacune de ses voisines non marquées
+                for voisine in self.get_reachable_cells(c):
+                    if voisine not in marquage:
+                        # On marque la voisine, donc +1 sur le compteur de cellules marquées
+                        # puis on l'ajoute en haut de la pile tout en mémorisant son prédecesseur
+                        marquage.append(voisine)
+                        nbCellsMarked += 1
+                        pile.append(voisine)
+                        pred[voisine] = c 
+        # On initialise un chemin vide et c à D
+        chemin = []
+        c = stop 
+        # Tant que c ne correspond pas à D
+        while c != start:
+            # On l'ajoute au chemin parcouru
+            chemin.append(c)
+            # Puis on met le prédécesseur de c dans c
+            c = pred[c]
+        # Finalement on ajoute la cellule de départ au chemin
+        chemin.append(start)
+        return chemin
+    
+    def solve_bfs(self, start: tuple, stop: tuple) -> list:
+        """
+        Algorithme de résolution par parcours en largeur du labyrinthe.
+
+        Args:
+            start (tuple): Cellule de départ du parcours
+            stop (tuple): Cellule d'arrivée du parcours
+
+        Returns:
+            list: Chemin parcouru par l'algorithme
+        """        
+        # D = start, A = stop 
         
-        while len(marquage) != len(self.get_cells):
-            c = pile.pop(0)
-            if c == stop
+        # On initialise la structure d'attente et le marquage en mettant D dedans
+        file = [start]
+        marquage = [start]
+        # On établi un compteur (à 1 avec start dans pile) pour connaître le nombre de cellules 
+        # marquées et pouvoir le comparer au nb de cellules total
+        nbCellsMarked = 1
+        # On initialise le dictionnaire des prédecesseurs
+        pred = {start: start}
+        # On vérifie si toutes les cellules ont été marquées, si non on rentre dans la boucle
+        nbCells = len(self.get_cells())
+        while nbCellsMarked < nbCells:
+            # On récupère et enlève la cellule en haut de la file
+            c = file.pop(0)
+            # Si elle ne correspond pas à A
+            if c != stop:
+                # Pour chacune de ses voisines non marquées
+                for voisine in self.get_reachable_cells(c):
+                    if voisine not in marquage:
+                        # On marque la voisine, donc +1 sur le compteur de cellules marquées
+                        # puis on l'ajoute en haut de la file tout en mémorisant son prédecesseur
+                        marquage.append(voisine)
+                        nbCellsMarked += 1
+                        file.append(voisine)
+                        pred[voisine] = c 
+        # On initialise un chemin vide et c à D
+        chemin = []
+        c = stop 
+        # Tant que c ne correspond pas à D
+        while c != start:
+            # On l'ajoute au chemin parcouru
+            chemin.append(c)
+            # Puis on met le prédécesseur de c dans c
+            c = pred[c]
+        # Finalement on ajoute la cellule de départ au chemin
+        chemin.append(start)
+        return chemin
         
         
 
