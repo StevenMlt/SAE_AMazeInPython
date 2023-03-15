@@ -12,9 +12,13 @@ class Maze:
 
 
 
-    """/////////////////////////////////////////////////////////////////
-                            - Constructeur -
-    /////////////////////////////////////////////////////////////////"""
+
+
+    ###################################################################################
+    """////////////////////////////////////////////////////////////////////////////////
+                                    - CONSTRUCTEUR -
+    ////////////////////////////////////////////////////////////////////////////////"""
+    ###################################################################################
 
 
 
@@ -54,9 +58,15 @@ class Maze:
 
 
 
-    """/////////////////////////////////////////////////////////////////
-                        - Méthodes d'affichage -
-    /////////////////////////////////////////////////////////////////"""
+
+
+
+
+    ###################################################################################
+    """////////////////////////////////////////////////////////////////////////////////
+                                  - METHODES D'AFFICHAGE -
+    ////////////////////////////////////////////////////////////////////////////////"""
+    ###################################################################################
 
 
 
@@ -165,9 +175,15 @@ class Maze:
     
 
 
-    """/////////////////////////////////////////////////////////////////
-                            - Méthodes d'accès -
-    /////////////////////////////////////////////////////////////////"""
+
+
+
+
+    ###################################################################################
+    """////////////////////////////////////////////////////////////////////////////////
+                                    - METHODES D'ACCES -
+    ////////////////////////////////////////////////////////////////////////////////"""
+    ###################################################################################
 
 
 
@@ -250,9 +266,15 @@ class Maze:
 
 
 
-    """/////////////////////////////////////////////////////////////////
-                        - Méthodes de modification -
-    /////////////////////////////////////////////////////////////////"""
+
+
+
+
+    ###################################################################################
+    """////////////////////////////////////////////////////////////////////////////////
+                                - METHODES DE MODIFICATION -
+    ////////////////////////////////////////////////////////////////////////////////"""
+    ###################################################################################
 
 
 
@@ -331,243 +353,16 @@ class Maze:
         return
     
     
-    
-    """/////////////////////////////////////////////////////////////////
-                             - Méthodes autres -
-    /////////////////////////////////////////////////////////////////"""
-    
-        
-        
-    def solve_dfs(self, start: tuple, stop: tuple) -> list:
-        """
-        Algorithme de résolution par parcours en profondeur du labyrinthe.
 
-        Args:
-            start (tuple): Cellule de départ du parcours
-            stop (tuple): Cellule d'arrivée du parcours
 
-        Returns:
-            list: Chemin parcouru pour aller de start à stop
-        """        
-        # D = start, A = stop 
-        
-        # On initialise la structure d'attente et le marquage en mettant D dedans
-        pile = [start]
-        marquage = [start]
-        # On établi un compteur (à 1 avec start dans pile) pour connaître le nombre de cellules 
-        # marquées et pouvoir le comparer au nb de cellules total
-        nbCellsMarked = 1
-        # On initialise le dictionnaire des prédecesseurs
-        pred = {start: start}
-        # On vérifie si toutes les cellules ont été marquées, si non on rentre dans la boucle
-        nbCells = len(self.get_cells())
-        termine = False
-        while nbCellsMarked < nbCells and not termine:
-            # On récupère et enlève la cellule en haut de la pile
-            c = pile.pop()
-            # Si elle ne correspond pas à A
-            if c == stop:
-                termine = True
-            else:
-                # Pour chacune de ses voisines non marquées
-                for voisine in self.get_reachable_cells(c):
-                    if voisine not in marquage:
-                        # On marque la voisine, donc +1 sur le compteur de cellules marquées
-                        # puis on l'ajoute en haut de la pile tout en mémorisant son prédecesseur
-                        marquage.append(voisine)
-                        nbCellsMarked += 1
-                        pile.append(voisine)
-                        pred[voisine] = c 
-        # On initialise un chemin vide et c à D
-        chemin = []
-        c = stop 
-        # Tant que c ne correspond pas à D
-        while c != start:
-            # On l'ajoute au chemin parcouru
-            chemin.append(c)
-            # Puis on met le prédécesseur de c dans c
-            c = pred[c]
-        # Finalement on ajoute la cellule de départ au chemin
-        chemin.append(start)
-        return chemin
-    
-    def solve_bfs(self, start: tuple, stop: tuple) -> list:
-        """
-        Algorithme de résolution par parcours en largeur du labyrinthe.
 
-        Args:
-            start (tuple): Cellule de départ du parcours
-            stop (tuple): Cellule d'arrivée du parcours
 
-        Returns:
-            list: Chemin parcouru pour aller de start à stop
-        """        
-        # D = start, A = stop 
-        
-        # On initialise la structure d'attente et le marquage en mettant D dedans
-        file = [start]
-        marquage = [start]
-        # On établi un compteur (à 1 avec start dans pile) pour connaître le nombre de cellules 
-        # marquées et pouvoir le comparer au nb de cellules total
-        nbCellsMarked = 1
-        # On initialise le dictionnaire des prédecesseurs
-        pred = {start: start}
-        # On vérifie si toutes les cellules ont été marquées, si non on rentre dans la boucle
-        nbCells = len(self.get_cells())
-        termine = False
-        while nbCellsMarked < nbCells and not termine:
-            # On récupère et enlève la cellule en haut de la file
-            c = file.pop(0)
-            # Si elle ne correspond pas à A
-            if c == stop:
-                termine = True 
-            else:
-                # Pour chacune de ses voisines non marquées
-                for voisine in self.get_reachable_cells(c):
-                    if voisine not in marquage:
-                        # On marque la voisine, donc +1 sur le compteur de cellules marquées
-                        # puis on l'ajoute en haut de la file tout en mémorisant son prédecesseur
-                        marquage.append(voisine)
-                        nbCellsMarked += 1
-                        file.append(voisine)
-                        pred[voisine] = c 
-        # On initialise un chemin vide et c à D
-        chemin = []
-        c = stop 
-        # Tant que c ne correspond pas à D
-        while c != start:
-            # On l'ajoute au chemin parcouru
-            chemin.append(c)
-            # Puis on met le prédécesseur de c dans c
-            c = pred[c]
-        # Finalement on ajoute la cellule de départ au chemin
-        chemin.append(start)
-        return chemin
-    
-    def solve_rhr(self, start: tuple, stop: tuple) -> list:
-        """
-        Algorithme de résolution de "la main droite"
 
-        Args:
-            start (tuple): Cellule de départ du parcours
-            stop (tuple): Cellule d'arrivée du parcours
-
-        Returns:
-            list: Chemin parcouru pour aller de start à stop
-        """        
-        directionChanges = 0
-        marquage = [start]
-        pred = {start: start}
-        c = start
-        while c != stop:
-            while c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c]:
-                c = (c[0]-1,c[1])
-                marquage.append(c)
-                pred[(c[0]-1,c[1])] = c
-            directionChanges += 1
-            
-            while directionChanges != 0:
-                if abs(directionChanges)%4 == 1:
-                    if c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c] and (c[0]-1,c[1]) not in marquage:
-                        pred[(c[0]-1,c[1])] = c
-                        c = (c[0]-1,c[1])
-                        marquage.append(c)
-                        directionChanges -= 1
-                    elif c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c] and (c[0],c[1]-1) not in marquage:
-                        pred[(c[0],c[1]-1)] = c
-                        c = (c[0],c[1]-1)
-                        marquage.append(c)
-                    elif c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c] and (c[0]+1,c[1]) not in marquage:
-                        pred[(c[0]+1,c[1])] = c
-                        c = (c[0]+1,c[1])
-                        marquage.append(c)
-                        directionChanges += 1
-                    elif c[1]+1 < self.width and (c[0],c[1]+1) in self.neighbors[c] and (c[0],c[1]+1) not in marquage:
-                        pred[(c[0],c[1]+1)] = c
-                        c = (c[0],c[1]+1)
-                        marquage.append(c)
-                        directionChanges += 2
-                        
-                elif abs(directionChanges)%4 == 2:
-                    if c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c] and (c[0],c[1]-1) not in marquage:
-                        pred[(c[0],c[1]-1)] = c
-                        c = (c[0],c[1]-1)
-                        marquage.append(c)
-                        directionChanges -= 1
-                    elif c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c] and (c[0]+1,c[1]) not in marquage:
-                        pred[(c[0]+1,c[1])] = c
-                        c = (c[0]+1,c[1])
-                        marquage.append(c)
-                    elif c[1]+1 < self.width and (c[0],c[1]+1) in self.neighbors[c] and (c[0],c[1]+1) not in marquage:
-                        pred[(c[0],c[1]+1)] = c
-                        c = (c[0],c[1]+1)
-                        marquage.append(c)
-                        directionChanges += 1
-                    elif c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c] and (c[0]-1,c[1]) not in marquage:
-                        pred[(c[0]-1,c[1])] = c
-                        c = (c[0]-1,c[1])
-                        marquage.append(c)
-                        directionChanges += 2
-                        
-                elif abs(directionChanges)%4 == 3:
-                    if c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c] and (c[0]+1,c[1]) not in marquage:
-                        pred[(c[0]+1,c[1])] = c
-                        c = (c[0]+1,c[1])
-                        marquage.append(c)
-                        directionChanges -= 1
-                    elif c[1]+1 < self.width and (c[0],c[1]+1) in self.neighbors[c] and (c[0],c[1]+1) not in marquage:
-                        pred[(c[0],c[1]+1)] = c
-                        c = (c[0],c[1]+1)
-                        marquage.append(c)
-                    elif c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c] and (c[0]-1,c[1]) not in marquage:
-                        pred[(c[0]-1,c[1])] = c
-                        c = (c[0]-1,c[1])
-                        marquage.append(c)
-                        directionChanges += 1
-                    elif c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c] and (c[0],c[1]-1) not in marquage:
-                        pred[(c[0],c[1]-1)] = c
-                        c = (c[0],c[1]-1)
-                        marquage.append(c)
-                        directionChanges += 2
-                        
-                elif abs(directionChanges)%4 == 0:
-                    if c[1]+1 < self.width and (c[0]+1,c[1]) in self.neighbors[c] and (c[0],c[1]+1) not in marquage:
-                        pred[(c[0],c[1]+1)] = c
-                        c = (c[0],c[1]+1)
-                        marquage.append(c)
-                        directionChanges -= 1
-                    elif c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c] and (c[0]-1,c[1]) not in marquage:
-                        pred[(c[0]-1,c[1])] = c
-                        c = (c[0]-1,c[1])
-                        marquage.append(c)
-                    elif c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c] and (c[0],c[1]-1) not in marquage:
-                        pred[(c[0],c[1]-1)] = c
-                        c = (c[0],c[1]-1)
-                        marquage.append(c)
-                        directionChanges += 1
-                    elif c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c] and (c[0]+1,c[1]) not in marquage:
-                        pred[(c[0]+1,c[1])] = c
-                        c = (c[0]+1,c[1])
-                        marquage.append(c)
-                        directionChanges += 2
-        # On initialise un chemin vide et c à D
-        chemin = []
-        c = stop 
-        # Tant que c ne correspond pas à D
-        while c != start:
-            # On l'ajoute au chemin parcouru
-            chemin.append(c)
-            # Puis on met le prédécesseur de c dans c
-            c = pred[c]
-        # Finalement on ajoute la cellule de départ au chemin
-        chemin.append(start)
-        return chemin
-        
-        
-
-    """/////////////////////////////////////////////////////////////////
-                           - Méthodes de classe -
-    /////////////////////////////////////////////////////////////////"""
+    ###################################################################################
+    """////////////////////////////////////////////////////////////////////////////////
+                             - METHODES DE CLASSE (GENERATION) -
+    ////////////////////////////////////////////////////////////////////////////////"""
+    ###################################################################################
 
 
 
@@ -833,6 +628,291 @@ class Maze:
                     
         return laby
                 
+    
+    
+    
+    
+    
+    
+    ###################################################################################
+    """////////////////////////////////////////////////////////////////////////////////
+                                  - METHODES DE RESOLUTION -
+    ////////////////////////////////////////////////////////////////////////////////"""
+    ###################################################################################
+    
+        
+        
+    def solve_dfs(self, start: tuple, stop: tuple) -> list:
+        """
+        Algorithme de résolution par parcours en profondeur du labyrinthe.
+
+        Args:
+            start (tuple): Cellule de départ du parcours
+            stop (tuple): Cellule d'arrivée du parcours
+
+        Returns:
+            list: Chemin parcouru pour aller de start à stop
+        """        
+        # D = start, A = stop 
+        
+        # On initialise la structure d'attente et le marquage en mettant D dedans
+        pile = [start]
+        marquage = [start]
+        # On établi un compteur (à 1 avec start dans pile) pour connaître le nombre de cellules 
+        # marquées et pouvoir le comparer au nb de cellules total
+        nbCellsMarked = 1
+        # On initialise le dictionnaire des prédecesseurs
+        pred = {start: start}
+        # On vérifie si toutes les cellules ont été marquées, si non on rentre dans la boucle
+        nbCells = len(self.get_cells())
+        termine = False
+        while nbCellsMarked < nbCells and not termine:
+            # On récupère et enlève la cellule en haut de la pile
+            c = pile.pop()
+            # Si elle ne correspond pas à A
+            if c == stop:
+                termine = True
+            else:
+                # Pour chacune de ses voisines non marquées
+                for voisine in self.get_reachable_cells(c):
+                    if voisine not in marquage:
+                        # On marque la voisine, donc +1 sur le compteur de cellules marquées
+                        # puis on l'ajoute en haut de la pile tout en mémorisant son prédecesseur
+                        marquage.append(voisine)
+                        nbCellsMarked += 1
+                        pile.append(voisine)
+                        pred[voisine] = c 
+        # On initialise un chemin vide et c à D
+        chemin = []
+        c = stop 
+        # Tant que c ne correspond pas à D
+        while c != start:
+            # On l'ajoute au chemin parcouru
+            chemin.append(c)
+            # Puis on met le prédécesseur de c dans c
+            c = pred[c]
+        # Finalement on ajoute la cellule de départ au chemin
+        chemin.append(start)
+        return chemin
+    
+    def solve_bfs(self, start: tuple, stop: tuple) -> list:
+        """
+        Algorithme de résolution par parcours en largeur du labyrinthe.
+
+        Args:
+            start (tuple): Cellule de départ du parcours
+            stop (tuple): Cellule d'arrivée du parcours
+
+        Returns:
+            list: Chemin parcouru pour aller de start à stop
+        """        
+        # D = start, A = stop 
+        
+        # On initialise la structure d'attente et le marquage en mettant D dedans
+        file = [start]
+        marquage = [start]
+        # On établi un compteur (à 1 avec start dans pile) pour connaître le nombre de cellules 
+        # marquées et pouvoir le comparer au nb de cellules total
+        nbCellsMarked = 1
+        # On initialise le dictionnaire des prédecesseurs
+        pred = {start: start}
+        # On vérifie si toutes les cellules ont été marquées, si non on rentre dans la boucle
+        nbCells = len(self.get_cells())
+        termine = False
+        while nbCellsMarked < nbCells and not termine:
+            # On récupère et enlève la cellule en haut de la file
+            c = file.pop(0)
+            # Si elle ne correspond pas à A
+            if c == stop:
+                termine = True 
+            else:
+                # Pour chacune de ses voisines non marquées
+                for voisine in self.get_reachable_cells(c):
+                    if voisine not in marquage:
+                        # On marque la voisine, donc +1 sur le compteur de cellules marquées
+                        # puis on l'ajoute en haut de la file tout en mémorisant son prédecesseur
+                        marquage.append(voisine)
+                        nbCellsMarked += 1
+                        file.append(voisine)
+                        pred[voisine] = c 
+        # On initialise un chemin vide et c à D
+        chemin = []
+        c = stop 
+        # Tant que c ne correspond pas à D
+        while c != start:
+            # On l'ajoute au chemin parcouru
+            chemin.append(c)
+            # Puis on met le prédécesseur de c dans c
+            c = pred[c]
+        # Finalement on ajoute la cellule de départ au chemin
+        chemin.append(start)
+        return chemin
+    
+    def solve_rhr(self, start: tuple, stop: tuple) -> list:
+        """
+        Algorithme de résolution de "la main droite"
+
+        Args:
+            start (tuple): Cellule de départ du parcours
+            stop (tuple): Cellule d'arrivée du parcours
+
+        Returns:
+            list: Chemin parcouru pour aller de start à stop
+        """        
+        directionChanges = 0
+        marquage = [start]
+        pred = {start: start}
+        c = start
+        while c != stop:
+            while c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c]:
+                c = (c[0]-1,c[1])
+                marquage.append(c)
+                pred[(c[0]-1,c[1])] = c
+            directionChanges += 1
+            
+            while directionChanges != 0:
+                if abs(directionChanges)%4 == 1:
+                    if c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c] and (c[0]-1,c[1]) not in marquage:
+                        pred[(c[0]-1,c[1])] = c
+                        c = (c[0]-1,c[1])
+                        marquage.append(c)
+                        directionChanges -= 1
+                    elif c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c] and (c[0],c[1]-1) not in marquage:
+                        pred[(c[0],c[1]-1)] = c
+                        c = (c[0],c[1]-1)
+                        marquage.append(c)
+                    elif c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c] and (c[0]+1,c[1]) not in marquage:
+                        pred[(c[0]+1,c[1])] = c
+                        c = (c[0]+1,c[1])
+                        marquage.append(c)
+                        directionChanges += 1
+                    elif c[1]+1 < self.width and (c[0],c[1]+1) in self.neighbors[c] and (c[0],c[1]+1) not in marquage:
+                        pred[(c[0],c[1]+1)] = c
+                        c = (c[0],c[1]+1)
+                        marquage.append(c)
+                        directionChanges += 2
+                        
+                elif abs(directionChanges)%4 == 2:
+                    if c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c] and (c[0],c[1]-1) not in marquage:
+                        pred[(c[0],c[1]-1)] = c
+                        c = (c[0],c[1]-1)
+                        marquage.append(c)
+                        directionChanges -= 1
+                    elif c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c] and (c[0]+1,c[1]) not in marquage:
+                        pred[(c[0]+1,c[1])] = c
+                        c = (c[0]+1,c[1])
+                        marquage.append(c)
+                    elif c[1]+1 < self.width and (c[0],c[1]+1) in self.neighbors[c] and (c[0],c[1]+1) not in marquage:
+                        pred[(c[0],c[1]+1)] = c
+                        c = (c[0],c[1]+1)
+                        marquage.append(c)
+                        directionChanges += 1
+                    elif c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c] and (c[0]-1,c[1]) not in marquage:
+                        pred[(c[0]-1,c[1])] = c
+                        c = (c[0]-1,c[1])
+                        marquage.append(c)
+                        directionChanges += 2
+                        
+                elif abs(directionChanges)%4 == 3:
+                    if c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c] and (c[0]+1,c[1]) not in marquage:
+                        pred[(c[0]+1,c[1])] = c
+                        c = (c[0]+1,c[1])
+                        marquage.append(c)
+                        directionChanges -= 1
+                    elif c[1]+1 < self.width and (c[0],c[1]+1) in self.neighbors[c] and (c[0],c[1]+1) not in marquage:
+                        pred[(c[0],c[1]+1)] = c
+                        c = (c[0],c[1]+1)
+                        marquage.append(c)
+                    elif c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c] and (c[0]-1,c[1]) not in marquage:
+                        pred[(c[0]-1,c[1])] = c
+                        c = (c[0]-1,c[1])
+                        marquage.append(c)
+                        directionChanges += 1
+                    elif c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c] and (c[0],c[1]-1) not in marquage:
+                        pred[(c[0],c[1]-1)] = c
+                        c = (c[0],c[1]-1)
+                        marquage.append(c)
+                        directionChanges += 2
+                        
+                elif abs(directionChanges)%4 == 0:
+                    if c[1]+1 < self.width and (c[0]+1,c[1]) in self.neighbors[c] and (c[0],c[1]+1) not in marquage:
+                        pred[(c[0],c[1]+1)] = c
+                        c = (c[0],c[1]+1)
+                        marquage.append(c)
+                        directionChanges -= 1
+                    elif c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c] and (c[0]-1,c[1]) not in marquage:
+                        pred[(c[0]-1,c[1])] = c
+                        c = (c[0]-1,c[1])
+                        marquage.append(c)
+                    elif c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c] and (c[0],c[1]-1) not in marquage:
+                        pred[(c[0],c[1]-1)] = c
+                        c = (c[0],c[1]-1)
+                        marquage.append(c)
+                        directionChanges += 1
+                    elif c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c] and (c[0]+1,c[1]) not in marquage:
+                        pred[(c[0]+1,c[1])] = c
+                        c = (c[0]+1,c[1])
+                        marquage.append(c)
+                        directionChanges += 2
+        # On initialise un chemin vide et c à D
+        chemin = []
+        c = stop 
+        # Tant que c ne correspond pas à D
+        while c != start:
+            # On l'ajoute au chemin parcouru
+            chemin.append(c)
+            # Puis on met le prédécesseur de c dans c
+            c = pred[c]
+        # Finalement on ajoute la cellule de départ au chemin
+        chemin.append(start)
+        return chemin
+        
+        
+
+
+
+
+
+    ###################################################################################
+    """////////////////////////////////////////////////////////////////////////////////
+                                  - METHODES D'EVALUATION -
+    ////////////////////////////////////////////////////////////////////////////////"""
+    ###################################################################################
+
+
+
+    def distance_geo(self, c1: tuple, c2: tuple) -> int:
+        """
+        Calcule la distance « géodésique » entre la cellule c1 et la cellule c2, c est à dire 
+        le nombre minimal de déplacements nécessaires sur le graphe pour aller de c1 à c2.
+
+        Args:
+            c1 (tuple): Cellule de départ
+            c2 (tuple): Cellule d'arrivée
+
+        Returns:
+            int: Nombre minimal de déplacements.
+        """        
+        chemin = self.solve_dfs(c1, c2)
+        return len(chemin)-1
+    
+    def distance_man(self, c1: tuple, c2: tuple) -> int:
+        """
+        Calcule la distance de Manhattan, sur la grille, entre la cellule c1 et la cellule c2, 
+        c est à dire le nombre minimal de déplacements nécessaires pour aller de c2 à c1 si le 
+        labyrinthe était vide de tout mur.
+
+        Args:
+            c1 (tuple): Cellule de départ
+            c2 (tuple): Cellule d'arrivée
+
+        Returns:
+            int: Nombre minimal de déplacements.
+        """       
+        self.be_empty() 
+        chemin = self.solve_bfs(c1, c2)
+        return len(chemin)-1
+    
             
             
             
