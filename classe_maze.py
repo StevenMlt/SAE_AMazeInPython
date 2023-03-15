@@ -569,7 +569,7 @@ class Maze:
         return laby
     
     @classmethod
-    def gen_wilson(cls, h: int, w: int) -> object:
+    def gen_wilson(cls, h: int, w: int) -> object:     # /!\ Code non fonctionnel
         """
         Génère un labyrinthe, à h lignes et w colonnes, parfait, avec l algorithme
         de Wilson.
@@ -748,7 +748,7 @@ class Maze:
         chemin.append(start)
         return chemin
     
-    def solve_rhr(self, start: tuple, stop: tuple) -> list:
+    def solve_rhr(self, start: tuple, stop: tuple) -> list:     # /!\ Code non fonctionnel
         """
         Algorithme de résolution de "la main droite"
 
@@ -760,112 +760,85 @@ class Maze:
             list: Chemin parcouru pour aller de start à stop
         """        
         directionChanges = 0
-        marquage = [start]
-        pred = {start: start}
+        chemin = [start]
         c = start
-        while c != stop:
-            while c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c]:
-                c = (c[0]-1,c[1])
-                marquage.append(c)
-                pred[(c[0]-1,c[1])] = c
-            directionChanges += 1
+        while stop not in chemin:
+            while c[0]+1 >= 0 and (c[0]+1,c[1]) in self.neighbors[c]:
+                c = (c[0]+1,c[1])
+                chemin.append(c)
+                directionChanges += 1
             
-            while directionChanges != 0:
-                if abs(directionChanges)%4 == 1:
-                    if c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c] and (c[0]-1,c[1]) not in marquage:
-                        pred[(c[0]-1,c[1])] = c
+            if c[1]-1 >=0 and (c[0],c[1]-1) in self.neighbors[c]:
+                c = (c[0],c[1]+1)
+                chemin.append(c)
+            
+            while directionChanges != 0 and stop not in chemin:
+                if directionChanges%4 == 1:
+                    if c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c]:
                         c = (c[0]-1,c[1])
-                        marquage.append(c)
+                        chemin.append(c)
                         directionChanges -= 1
-                    elif c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c] and (c[0],c[1]-1) not in marquage:
-                        pred[(c[0],c[1]-1)] = c
+                    elif c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c]:
                         c = (c[0],c[1]-1)
-                        marquage.append(c)
-                    elif c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c] and (c[0]+1,c[1]) not in marquage:
-                        pred[(c[0]+1,c[1])] = c
+                        chemin.append(c)
+                    elif c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c]:
                         c = (c[0]+1,c[1])
-                        marquage.append(c)
+                        chemin.append(c)
                         directionChanges += 1
-                    elif c[1]+1 < self.width and (c[0],c[1]+1) in self.neighbors[c] and (c[0],c[1]+1) not in marquage:
-                        pred[(c[0],c[1]+1)] = c
+                    else:
                         c = (c[0],c[1]+1)
-                        marquage.append(c)
+                        chemin.append(c)
                         directionChanges += 2
-                        
-                elif abs(directionChanges)%4 == 2:
-                    if c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c] and (c[0],c[1]-1) not in marquage:
-                        pred[(c[0],c[1]-1)] = c
+                elif directionChanges%4 == 2:
+                    if c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c]:
                         c = (c[0],c[1]-1)
-                        marquage.append(c)
+                        chemin.append(c)
                         directionChanges -= 1
-                    elif c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c] and (c[0]+1,c[1]) not in marquage:
-                        pred[(c[0]+1,c[1])] = c
+                    elif c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c]:
                         c = (c[0]+1,c[1])
-                        marquage.append(c)
-                    elif c[1]+1 < self.width and (c[0],c[1]+1) in self.neighbors[c] and (c[0],c[1]+1) not in marquage:
-                        pred[(c[0],c[1]+1)] = c
+                        chemin.append(c)
+                    elif c[1]+1 < self.width and (c[0],c[1]+1) in self.neighbors[c]:
                         c = (c[0],c[1]+1)
-                        marquage.append(c)
+                        chemin.append(c)
                         directionChanges += 1
-                    elif c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c] and (c[0]-1,c[1]) not in marquage:
-                        pred[(c[0]-1,c[1])] = c
+                    else:
                         c = (c[0]-1,c[1])
-                        marquage.append(c)
+                        chemin.append(c)
                         directionChanges += 2
-                        
-                elif abs(directionChanges)%4 == 3:
-                    if c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c] and (c[0]+1,c[1]) not in marquage:
-                        pred[(c[0]+1,c[1])] = c
+                elif directionChanges%4 == 3:
+                    if c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c]:
                         c = (c[0]+1,c[1])
-                        marquage.append(c)
+                        chemin.append(c)
                         directionChanges -= 1
-                    elif c[1]+1 < self.width and (c[0],c[1]+1) in self.neighbors[c] and (c[0],c[1]+1) not in marquage:
-                        pred[(c[0],c[1]+1)] = c
-                        c = (c[0],c[1]+1)
-                        marquage.append(c)
-                    elif c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c] and (c[0]-1,c[1]) not in marquage:
-                        pred[(c[0]-1,c[1])] = c
+                    elif c[1]+1 < self.width and (c[1]+1,c[1]) in self.neighbors[c]:
+                        c = (c[1]+1,c[1])
+                        chemin.append(c)
+                    elif c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c]:
                         c = (c[0]-1,c[1])
-                        marquage.append(c)
+                        chemin.append(c)
                         directionChanges += 1
-                    elif c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c] and (c[0],c[1]-1) not in marquage:
-                        pred[(c[0],c[1]-1)] = c
-                        c = (c[0],c[1]-1)
-                        marquage.append(c)
+                    else:
+                        c = (c[1]-1,c[1])
+                        chemin.append(c)
                         directionChanges += 2
-                        
-                elif abs(directionChanges)%4 == 0:
-                    if c[1]+1 < self.width and (c[0]+1,c[1]) in self.neighbors[c] and (c[0],c[1]+1) not in marquage:
-                        pred[(c[0],c[1]+1)] = c
+                elif directionChanges%4 == 0:
+                    if c[1]+1 < self.width and (c[0],c[1]+1) in self.neighbors[c]:
                         c = (c[0],c[1]+1)
-                        marquage.append(c)
+                        chemin.append(c)
                         directionChanges -= 1
-                    elif c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c] and (c[0]-1,c[1]) not in marquage:
-                        pred[(c[0]-1,c[1])] = c
+                    elif c[0]-1 >= 0 and (c[0]-1,c[1]) in self.neighbors[c]:
                         c = (c[0]-1,c[1])
-                        marquage.append(c)
-                    elif c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c] and (c[0],c[1]-1) not in marquage:
-                        pred[(c[0],c[1]-1)] = c
+                        chemin.append(c)
+                    elif c[1]-1 >= 0 and (c[0],c[1]-1) in self.neighbors[c]:
                         c = (c[0],c[1]-1)
-                        marquage.append(c)
+                        chemin.append(c)
                         directionChanges += 1
-                    elif c[0]+1 < self.height and (c[0]+1,c[1]) in self.neighbors[c] and (c[0]+1,c[1]) not in marquage:
-                        pred[(c[0]+1,c[1])] = c
+                    else:
                         c = (c[0]+1,c[1])
-                        marquage.append(c)
+                        chemin.append(c)
                         directionChanges += 2
-        # On initialise un chemin vide et c à D
-        chemin = []
-        c = stop 
-        # Tant que c ne correspond pas à D
-        while c != start:
-            # On l'ajoute au chemin parcouru
-            chemin.append(c)
-            # Puis on met le prédécesseur de c dans c
-            c = pred[c]
-        # Finalement on ajoute la cellule de départ au chemin
-        chemin.append(start)
-        return chemin
+        return chemin       
+            
         
         
 
