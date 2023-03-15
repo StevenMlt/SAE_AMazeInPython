@@ -333,7 +333,7 @@ class Maze:
     
     
     """/////////////////////////////////////////////////////////////////
-                             - Méthodes autres -
+                          - Méthodes de Résolution -
     /////////////////////////////////////////////////////////////////"""
     
         
@@ -562,6 +562,27 @@ class Maze:
         # Finalement on ajoute la cellule de départ au chemin
         chemin.append(start)
         return chemin
+        
+        
+
+    """/////////////////////////////////////////////////////////////////
+                          - Méthodes d'évaluation -
+    /////////////////////////////////////////////////////////////////"""
+
+
+
+    def distance_geo(self, c1: tuple, c2: tuple) -> int:
+        """
+        Calcule la distance « géodésique » entre la cellule c1 et la cellule c2, c est à dire 
+        le nombre minimal de déplacements nécessaires sur le graphe pour aller de c1 à c2.
+
+        Args:
+            c1 (tuple): Cellule de départ
+            c2 (tuple): Cellule d'arrivée
+
+        Returns:
+            int: Nombre minimal de déplacements.
+        """        
         
         
 
