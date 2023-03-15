@@ -585,7 +585,25 @@ class Maze:
         """        
         chemin = self.solve_dfs(c1, c2)
         return len(chemin)-1
-        
+    
+    def distance_man(self, c1: tuple, c2: tuple) -> int:
+        """
+        Calcule la distance de Manhattan, sur la grille, entre la cellule c1 et la cellule c2, 
+        c est à dire le nombre minimal de déplacements nécessaires pour aller de c2 à c1 si le 
+        labyrinthe était vide de tout mur.
+
+        Args:
+            c1 (tuple): Cellule de départ
+            c2 (tuple): Cellule d'arrivée
+
+        Returns:
+            int: Nombre minimal de déplacements.
+        """       
+        self.be_empty() 
+        chemin = self.solve_bfs(c1, c2)
+        return len(chemin)-1
+    
+    
 
     """/////////////////////////////////////////////////////////////////
                            - Méthodes de classe -
