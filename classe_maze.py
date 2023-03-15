@@ -583,7 +583,8 @@ class Maze:
         Returns:
             int: Nombre minimal de déplacements.
         """        
-        
+        chemin = self.solve_dfs(c1, c2)
+        return len(chemin)-1
         
 
     """/////////////////////////////////////////////////////////////////
