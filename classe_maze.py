@@ -361,11 +361,14 @@ class Maze:
         pred = {start: start}
         # On vérifie si toutes les cellules ont été marquées, si non on rentre dans la boucle
         nbCells = len(self.get_cells())
-        while nbCellsMarked < nbCells:
+        termine = False
+        while nbCellsMarked < nbCells and not termine:
             # On récupère et enlève la cellule en haut de la pile
             c = pile.pop()
             # Si elle ne correspond pas à A
-            if c != stop:
+            if c == stop:
+                termine = True
+            else:
                 # Pour chacune de ses voisines non marquées
                 for voisine in self.get_reachable_cells(c):
                     if voisine not in marquage:
