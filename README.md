@@ -1,33 +1,11 @@
-# <div align="left">////////////////////////////////////////////////////////</div>
+# AMazeInPython
 
-<hr>
+Programmes de création et de résolution labyrinthiques.
 
-# <div align="center"><b>SAE - A Maze In Python <br> FRAILLON mathis, MORLET steven</b></div>
+## Description
 
-<hr>
+Ce projet, réalisé en python, se divise en 2 parties principales de code.  
+La première étant la création d'une classe Maze, représentant un labyrinthe sous forme de graphe non-orienté (pour plus de précisions se référer au fichier de la classe).  
+La deuxième partie étant l'écriture de programmes dans un notebook Jupyter, utilisant la classe Maze, afin de mettre en place des fonctionnalités de création de labyrinthes selon plusieurs méthodes, comme en utilisant un arbre binaire, l'algorithme Sidewinder, etc. Puis de résolution, par exemple par parcours (largeur ou profondeur) ou encore en suivant l'algorithme de la Main droite (que nous n'avons pas traité).
 
-# <div align="right">////////////////////////////////////////////////////////</div>
 
-<br>
-<br>
-
-## Rappel de la SAE
----
-
-<br>
-
-Lors de cette SAE , nous avons eu pour but de réaliser un labyrinthe.
-
-<br>
-<br>
-
-## Particularités d'organisation
----
-
-<br>
-
-Pour commencer, nous avons séparé cette SAE en 2 fichiers:
-
-- Un notebook jupyter dans lequel nous avons fait les différents tests à réaliser en rappelant d'abord les consignes et l'organisation du sujet, puis en ajoutant quelques commentaires si besoin.
-
-- Un fichier python dans lequel nous avons implémenté la classe maze, il a suffit de l'importer sur le notebook pour pouvoir utiliser la classe.
